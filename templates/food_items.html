@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <body>
+        <h1>Add Food Item</h1>
+<form method="POST" action="{{ url_for('add_food_item') }}">
+    {{ form.hidden_tag() }}
+    {{ form.name }}
+    {{ form.description }}
+    {{ form.category }}
+    {{ form.expiration_date }}
+    {{ form.submit }}
+</form>
+</body>
+</html>

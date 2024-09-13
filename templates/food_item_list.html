@@ -1,0 +1,35 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <title>Food Items</title>
+    </head>
+    <body>
+        <h1>Food Items<h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Expiration Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for food_item in food_items %}
+                    
+                   <tr>
+                    <td>{{ food_item.name }}</td>
+                    <td>{{ food_item.description }}</td>
+                    <td>{{ food_item.category }}</td>
+                    <td>{{ food_item.expiration_date }}</td>
+                    <td><a href="{{ url_for('delete_food_item', id=food_item.id) }}">Delete</a></td>
+                   </tr>
+                   
+                   {% endfor %}
+                </tbody>
+            </table>
+        </body>
+        </html>
+                
