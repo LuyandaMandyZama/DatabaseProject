@@ -1,5 +1,19 @@
 from app import db 
-class FoodItem(db.model): 
+
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
+db = SQLAlchemy() 
+
+class User(db.Model):
+    id=db.Column(db.Integer, primary_key=True)
+    name= db.Column(db.String(100), nullable=False)
+    
+    email= db.Column(db.String(100), unique=True, nullable=False)
+    
+    def __repr__(self):
+        return f"User('{self.name}', '{self.email}')"
+
+class FoodItem(db.Model): 
     id= db.Column(db.Integer, primary_key=True) 
     name= db.Column(db.String(100), nullable=False)
     description= db.Column(db.Text)
@@ -8,5 +22,31 @@ class FoodItem(db.model):
     
     
 def __repr__(self):
-    return f'<FoodItem {self.name}>'    
+    return f"FoodItem('{self.name}', '{self.category}')"   
+
+class Inspection(db.Model):
+     id= db.Column(db.Integer, primary_key=True)
+     food_item_id = db.Column(db.Integer, db.ForeignKey('food_item.id'))
+     inspection_date = db.Column(db.DateTime)
+result=db.Column(db.String(50))
+
+food_item = db.relationship('FoodItem', backref=db.backref('inspections', lazy=True))
+
+def __repr__(self):
+    return f"Inspection('{self.inspection.date}', '{self.result}')"
+
+
+class Violation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    inspection_id = db.Column(db.Integer, db.ForeignKey('inspection.id'))
+    description = db.Column(db.Text)
+    severity = db.Column(db.String(50))
     
+    inspection = db.relationship('Inspection', backref=db.backref('violations', lazy=True))
+    
+def __repr__(self):
+    return f"Violation('{self.description}', '{self.severity}')" 
+
+from app import app, db 
+with app.app_context():
+    db.create_all

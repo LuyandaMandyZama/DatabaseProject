@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for
 from app import app, db
-from app.forms import FoodItemForm 
-from app.models import FoodItem
+from .forms import FoodItemForm 
+from .models import FoodItem
 
 @app.route('/') 
 def index(): 
