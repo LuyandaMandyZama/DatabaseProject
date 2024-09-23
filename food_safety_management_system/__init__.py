@@ -1,8 +1,8 @@
 #from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from . import app
-db = SQLAlchemy(app)
+#from . import app
+#db = None
 
 #app = Flask(__name__)
 #app.config['SECRET_KEY'] = 'your_secret_key'
