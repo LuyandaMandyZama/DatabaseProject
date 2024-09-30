@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport", content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>View Inspection</title>
+</head>
+
+        <body>
+            <h1>Inspection Details</h1>
+            <p>Inspection ID: {{ inspection.inspection_id }}</p>
+            <p>Food Item: {{ inspection.food_item }}</p>
+            <p>Inspection Date: {{ inspection.inspection_date }} </p>
+            <p>Results: {{ inspection.results }} </p>
+
+            <h2>Violations</h2>
+            <ul>
+                {% for violation in inspection.violation %}
+                <li>
+                    {{ violation.description }}
+                    ({{ violation.severity }})
+                    {{ violation.storage_location }}
+                </li>
+                {% endfor %}    
+            </ul>
+            <a href="{{ url_for('auth.inspection_history') }}">Back to Inspection</a>
+            </body>
+            </html>
+            

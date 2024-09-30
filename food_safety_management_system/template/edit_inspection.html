@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>Edit Inspection</title>
+    </head>
+
+    <body>
+        <h1>Edit Inspection</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.food_item.label }}
+            {{ form.food_item() }}
+            {{ form.inspection_date.label }}
+            {{ form.inspection_date() }}
+            {{ form.results.label }} 
+            {{ form.results() }}
+            {{ form.submit() }}
+        </form>
+        <a href="{{ url_for('auth.inspection_history') }}">Back to Inspection History</a>
+    </body>
+</html>

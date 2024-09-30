@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+    <title>INSPECTION HISTORY</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+ <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+
+                <li><a href="{{ url_for('auth.notifications') }}">Notifications</a></li>
+
+                <li><a href="{{ url_for('auth.inspection_history') }}">Inspection History</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <h1>Inspection History</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Inspection Date</th>
+                    <th>Food Item</th>
+                    <th>Results</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+        <tbody>
+            {% for inspection in inspections %}
+            <tr>
+               <td>{{ inspection.inspection_date }}</td>
+               <td>{{ inspection.food_item }}</td>
+               <td>{{ inspection.results }}</td>
+               <td><a href="{{ url_for('auth.view_inspection', inspection_id=(inspection.id) ) }}">View</a>
+                <a href="{{ url_for('auth.edit_inspection', inspection_id=(inspection.id) ) }}">Edit</a>
+               </td>
+            </tr>
+            {% endfor %}
+        </tbody>   
+        </table>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Food Safety Management System</p>
+    </footer>
+ </body>   
+ </html>
+ 

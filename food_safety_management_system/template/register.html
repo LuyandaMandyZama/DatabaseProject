@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registration Form</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }} {{ form.name }}
+        {{ form.email.label }} {{ form.email() }}
+        {{ form.password.label }} 
+        {{ form.password() }}
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password() }}
+        {{ form.submit() }}
+    
+    </form>
+    </body>
+    </html>

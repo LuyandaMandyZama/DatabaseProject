@@ -1,12 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask import redirect, url_for
 from flask import render_template
-from app import db, FoodItem
+from .models import db, FoodItem
 from .forms import FoodItemForm, UserForm
 
 from flask import Flask
 app = Flask(__name__)
-from app import models
 from .models import User
 
 users_blueprint = Blueprint('users', __name__)
@@ -31,7 +30,7 @@ def update_users(user_id):
 def delete_user(user_id):
     pass
 
-from app import app
+from .app import app
 
 
 
@@ -101,3 +100,23 @@ from flask_login import login_required
 @login_required
 def home():
     return render_template('home.html')
+
+#@app.route('/items', methods=['GET'])
+#ef get_item(item_id):
+  # food_item = FoodItem.query.get_or_404(item_id)
+   #return jsonify(food_item.to_dict())
+
+from flask import jsonify
+from .models import Inspection 
+inspection_bp = Blueprint('inspections', __name__)
+
+@inspection_bp.route('/api/inspections', methods=['GET']) 
+def get_inspections():
+   inspections = Inspection.query.all()
+   return jsonify([i.to_dict() for i in inspections])
+
+@inspection_bp.route('/api/inspections/<string:entity_type>', methods=['GET'])
+def get_inspections_by_entity(entity_type):
+   inspections = Inspection.query.filter_by(entity_type=entity_type).all()
+   return jsonify([i.to_dict() for i in inspections])
+ 

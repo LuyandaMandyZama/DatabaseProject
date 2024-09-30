@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>USER PROFILE<title>
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+
+                    <li><a href="{{ url_for('auth.inspection') }}">Inspection History</a></li>
+
+                    <li><a href="{{ url_for('auth.notifications') }}">Notifications</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h1>User Profile</h1>
+            <section>
+                <h2>User Information</h2>
+                    <p>Name: {{ current_user.name }}</p>
+                    <p>Email: {{ current_user.email }}</p>
+                    <p>Role: {{ current_user.role }}</p>
+                </section>  
+                
+                <section>
+                <h2>Training & Certifications</h2>
+                <ul>
+                    {% for training in current_user.training_history%}
+                    <li>{{ training.course_name }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section>
+                <h2>Inspection History</h2>
+                <ul>
+                    {% for inspection in current_user.inspection_history %}
+                    <li>{{ inspection.inspection_date }} ( {{ inspection.facility}} )</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section>
+                <h2>Notifications</h2>
+                <ul>
+                    {% for notification in current_user.notifications %}
+                    <li>{{ <notification.notification_date }} ( {{ notification.message}} )></li>
+                        {% endfor %}
+                </ul>
+            </section>
+        </main>
+
+
+     <footer>
+        <p>&copy;2024 Food Safety Management System</p>
+    </footer>   
+
+    </body>
+    </html>

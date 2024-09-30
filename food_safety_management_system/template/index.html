@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8>
+        <meta name="viewport" content="width=device-width, initial scale=1.0">
+
+        <title>Food Safety Monitoring System</title>
+        <link rel="stylesheet" href="style.css">
+        
+        </head>
+
+        <body>
+            <header>
+                <nav>
+                    <ul>
+                        <li><a href="#">Inspections</a></li>
+                        <li><a href="#">Create Inspection</a></li>
+                    </ul>
+                </nav>
+            </header>
+        <main>
+
+        <div id="inspectionn-table"></div>
+        <form id="inspection-form"></form>
+        <label for="food-item-id">Food Item ID:</label>
+        <input type="number" id="food-item-id" name="food_item_id"><br><br>
+        <label for="inspection-date">Inspection-Date</label>
+        <input type="date" id="inspection-date" name="inspection_date"><br><br>
+        <label for="result">Result</label>
+        <select id="result" name="result">
+            <option value="Pass">Pass</option>
+            <option value="Fail">Fail</option>
+        </select><br><br>
+        <label for="temperature">Temperature</label>
+        <input type="number" id="temperature" name="temperature"><br><br>
+        <button type="submit">Create Inspection</button>
+    </form>
+        </main>
+        <script src="scripts.js"></script>
+                </body>
+        </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>Inspection Report</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('auth.inspection_history') }}">Inspection History</a></li>
+
+                    <li><a href="{{ url_for('auth.profile') }}">Profile</a></li>
+
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+            <h1>Inspection Report</h1>
+            <form method="POST" action="{{ url_for('auth.submit_inspection', inspection_id=(inspection.inspection_id)) }}">
+                <label>Inspection Date</label>
+                <input type="date" name="inspection_date" value="{{ inspection.inspection_date }}">
+                <br>
+                <label>Location:</label>
+                <input type="text" name="location" value="{{ inspection.location }}">
+                <br>
+                <label>Food Item:</label>
+                <input type="text" name="food_item" value="{{ inspection.food_item }}" readonly>
+                <br>
+                <label>Results</label>
+                <textarea name="results">{{ inspection.results }}</textarea>
+                <br>
+                <button type="submit">Submit Report</button>
+            </form>
+        </main>
+        <footer>
+            <p>&copy; 2024 Food Safety Management System</p>
+        </footer>
+    </body>
+    </html>
