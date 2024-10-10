@@ -16,8 +16,11 @@
             {{ form.inspection_date() }}
             {{ form.results.label }} 
             {{ form.results() }}
-            {{ form.submit() }}
-        </form>
+            {{ form.submit() 
+            
+            }}
+        </form> 
+        
         <a href="{{ url_for('auth.inspection_history') }}">Back to Inspection History</a>
     </body>
 </html>

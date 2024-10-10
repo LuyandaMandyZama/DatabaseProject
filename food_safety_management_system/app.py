@@ -4,9 +4,9 @@ from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
-
+from .models import *
 from food_safety_management_system.extensions import extensions, db, migrate
-from food_safety_management_system.models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
+from .models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
 from datetime import datetime
   
 app = Flask(__name__)
@@ -16,15 +16,14 @@ SECRET_KEY = app.config['SECRET_KEY']
 
 app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:LuyandaZama14@localhost/foodsafetysystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-#db = SQLAlchemy()
+db = SQLAlchemy(app)
 
 migrate = Migrate(app, db, directory='C:\DatabaseProject\migrations')
 
 #for name, ext in extensions.items():
  #  if hasattr(ext, 'init_app'):
   #   exit.init_app(app)
-db.init_app(app) 
+#db.init_app(app) 
 migrate.init_app(app, db)
 
 with app.app_context():
@@ -47,28 +46,66 @@ def get_users():
    users = User.query.all()
    return jsonify([user.to_dict() for user in users])
 
+
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
    user = User.query.get_or_404(user_id)
-   return jsonify(user.to_dict())
+   return jsonify(user.torequest_dict())
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(email):
-   user = User.query.filter_by(email=email).first()
-   if user:
-      data = request.get_json()
-      user.email = data.get('email')  
-      user.name = data.get('name') 
-      db.session.commit() 
-      return jsonify(user.to_dict()) 
-   return jsonify({'message' : 'User Not Found'}), 
+from sqlalchemy import text
+
+@app.route('/users/<string:user_id>', methods=['PUT'])
+def update_user(user_id):
+   data = request.get_json()
+   name = data.get('name')
+   email = data.get('email')
+   query = text("SELECT * FROM user WHERE id = :id")
+   result = db.session.execute(query, {"id": user_id})
+   user = result.fetchone()
+   
+   if user is None:
+      return jsonify({"error":"User Not Found"}), 404
+   
+   update_query = text("UPDATE user SET name = :name, email = :email WHERE id = :id")
+   db.session.execute(update_query, {"name": name, "email": email, "id":user_id})
+   db.session.commit()
+   return jsonify({"message" : "User Updated Successfullly"}), 200
+   
+ #  data = request.get_json()
+  # user = User.query.get(user_id)
+   #if not user:
+    #  return jsonify({ 'message' : 'User Not Found' }), 404
+   
+   #data = request.get_json() 
+   #if 'email' in data: 
+    #  user.email = data['email']
+   #db.session.commit()
+   
+   #return jsonify(user.to_dict()), 200
+
+   #user = User.query.filter_by(email=email).first()
+   #if user:
+    #  data = request.get_json()
+     # user.email = data.get('email')  
+      #user.name = data.get('name') 
+      #db.session.commit() 
+      #return jsonify(user.to_dict()) 
+   #return jsonify({'message' : 'User Not Found'}), 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id): 
-    user = user.query.get_or_404(user_id) 
-    db.session.delete(user)
-    db.session.commit()
-    return jsonify({'message':'User has been deleted'})
+def delete_user(user_id):
+   query = text("SELECT * FROM user WHERE id = :id") 
+   result = db.session.execute(query, {"id":user_id})
+   user = result.fetchone()
+   if user is None: 
+      return jsonify({"error": "User Not Found"}), 404
+   delete_query = text("DELETE FROM user WHERE id = :id")
+   db.session.execute(delete_query, {"id":user_id})
+   db.session.commit()
+   return jsonify({"message":"User has been DELETED"}), 200
+      
+   
+
  
 @app.route('/add-item/<string:name>/<string:description>/<string:category>/<string:expiration_date>')
 def add_item(name, description, category, expiration_date):
@@ -125,14 +162,18 @@ def get_all_inspections():
  
 @app.route('/inspections', methods=['POST'])
 def create_inspection():
-   data = request.get_json()
+   data = request.get_json() 
    inspection = Inspection(
       food_item_id=data['food_item_id'],
       inspection_date=data['inspection_date'],
+      entity_type=data['entity_type'],
+      entity_id=data['entity_id'],
+      temperature=data['temperature'],
       results=data['results']
    )
    db.session.add(inspection)
    db.session.commit()
+   #return jsonify({'message':'Inspection Created', 'id':})
    return jsonify(inspection.to_dict()), 201
  
 @app.route('/inspections/<id>', methods=['PUT'])
@@ -142,6 +183,9 @@ def update_inspection(id):
       data = request.get_json()
       inspection.food_item_id= data.get('food_item_id')
       inspection.inspection_date= data.get('inspection_date')
+      inspection.entity_type=data.get('entity_type')
+      inspection.entity_id=data.get('entity_id')
+      inspection.temperature=data.get('temperature')
       inspection.results = data.get('results') 
       db.session.commit()
       return jsonify(inspection.to_dict())
@@ -268,6 +312,7 @@ def violation_summary():
    cursor.execute("SELECT * FROM violation")
    data = cursor.fetchall()
    return render_template('vision_summary.html', data=data)
+
 @app.shell_context_processor
 def startup(): 
    print("App is now SERVING")
@@ -276,6 +321,8 @@ def startup():
 @app.route('/favicon.ico')
 def favicon():
    return "", 204
+
+
 
 if __name__ == '__main__': 
    db.create_all()

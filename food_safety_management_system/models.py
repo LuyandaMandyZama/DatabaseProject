@@ -1,14 +1,22 @@
-
+from flask import Flask
+#from  food_safety_management_system import db 
 from .database import db
 from flask_sqlalchemy import SQLAlchemy 
-from flask_marshmallow import Marshmallow 
+from flask_marshmallow import Marshmallow
+#from .app import db 
 from flask_login import UserMixin
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, Text, Date 
 from sqlalchemy.ext.declarative import   declarative_base 
 Base = declarative_base()
 
-db = SQLAlchemy()
+#app = Flask(__name__)
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:LuyandaZama14@localhost/foodsafetysystem'
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+
+#db = SQLAlchemy(app)
 ma = Marshmallow()
 
 class User(db.Model, Base, UserMixin): 
@@ -19,6 +27,29 @@ class User(db.Model, Base, UserMixin):
     email= db.Column(db.String(100), unique=True, nullable=False)
     password_hash= db.Column(db.String(120), nullable=False)  
     
+    def to_dict(self):
+        return{
+            'id' : self.id,
+            'name' : self.name,
+            'email' : self.email,
+            'password_hash' : self.password_hash,
+        }
+        
+    def __init__(self, name, email, password): 
+        self.name = name
+        self.email = email
+        self.password = password
+    
+    
+    @classmethod 
+    def delete_by_id(cls, user_id):
+        user = cls.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit() 
+            return True
+        return False
+        
     @property
     def is_active(self):
         return True
@@ -31,6 +62,9 @@ def set_password(self, password):
 def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+def __repr__(self):
+    return f"<User {self.email}>"
+
 class Auth:
     def register(self, email, password):
         if User.query.filter_by(email=email).first():
@@ -83,7 +117,9 @@ def to_dict(self):
      
 class FoodItemSchema(ma.SQLAlchemyAutoSchema):
     class Meta: 
-        model =  FoodItem      
+        model =  FoodItem 
+        
+        load_instance = True      
     
 def __repr__(self):
     return f"<FoodItem {self.name}, {self.category}>"   
@@ -94,20 +130,22 @@ class Inspection(db.Model, Base):
     id= db.Column(db.Integer, primary_key=True)
     food_item_id = db.Column(db.Integer, db.ForeignKey('food_item.id'))
     inspection_date = db.Column(db.DateTime)
-    
-result=db.Column(db.String(50), nullable=False)
-temperature = db.Column(db.Float)
-food_item = db.relationship('FoodItem', backref=db.backref('inspections', lazy=True))
+    entity_type = db.Column(db.String(100), nullable=False)
+    entity_id = db.Column(db.Integer, nullable=False)
+    temperature = db.Column(db.Float, nullable=False)
+    results=db.Column(db.String(50), nullable=False)
+
+    food_item = db.relationship('FoodItem', backref=db.backref('inspections', lazy=True))
 
 def to_dict(self):
     return {
         'id' : self.id,
-        'entity_type' : self.entity_type,
-        'entity_id' : self.entity_id,
         'food_item_id' : self.food_item_id,
         'inspection_date': self.inspection_date.isoformat(),
-        'result' : self.result, 
-        'temperature': self.temperature
+        'entity_type' : self.entity_type,
+        'entity_id' : self.entity_id,
+        'temperature' : self.temperature,
+        'results' : self.results 
     }
 
 def __repr__(self):
