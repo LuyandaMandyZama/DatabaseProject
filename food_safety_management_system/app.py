@@ -14,7 +14,7 @@ app.config.from_pyfile('config.py')
 
 SECRET_KEY = app.config['SECRET_KEY']
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql://root:LuyandaZama14@localhost/foodsafetysystem'
+app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 

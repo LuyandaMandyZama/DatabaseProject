@@ -136,9 +136,19 @@ class Inspection(db.Model, Base):
     results=db.Column(db.String(50), nullable=False)
 
     food_item = db.relationship('FoodItem', backref=db.backref('inspections', lazy=True))
-
-def to_dict(self):
-    return {
+    
+    def __init__(self, food_item_id, inspection_date, entity_type, entity_id, temperature, results):
+        self.food_item_id = food_item_id
+        self.inspection_date = inspection_date
+        self.entity_type = entity_type
+        self.temperature = temperature
+        self.results = results
+        
+    def __repr__(self):
+        return f"<Inspection {self.id}: {self.entity_type} - {self.results}>" 
+     
+    def to_dict(self):
+        return {
         'id' : self.id,
         'food_item_id' : self.food_item_id,
         'inspection_date': self.inspection_date.isoformat(),
@@ -147,9 +157,6 @@ def to_dict(self):
         'temperature' : self.temperature,
         'results' : self.results 
     }
-
-def __repr__(self):
-    return f"<Inspection {self.inspection.date} {self.result}>"
 
 
 class Violation(db.Model):
