@@ -4,20 +4,23 @@ from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
-from .models import *
+#from .models import *
 from food_safety_management_system.extensions import extensions, db, migrate
 from .models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
 from datetime import datetime
+from .extensions import db, init_app
   
 app = Flask(__name__)
+
 app.config.from_pyfile('config.py')
 
 SECRET_KEY = app.config['SECRET_KEY']
 
 app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
+#.create_all()
+#db = SQLAlchemy()
+init_app(app)
 migrate = Migrate(app, db, directory='C:\DatabaseProject\migrations')
 
 #for name, ext in extensions.items():
