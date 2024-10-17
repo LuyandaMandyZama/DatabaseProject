@@ -17,8 +17,6 @@ extensions = {
     'db': db,
     'migrate': migrate
 }
-
 def init_app(app):
     db.init_app(app)
-    db.create_all()
-    app.db = db     
+        

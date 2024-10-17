@@ -5,33 +5,39 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 #from .models import *
-from food_safety_management_system.extensions import extensions, db, migrate
+from food_safety_management_system.extensions import extensions, db, migrate, init_app
 from .models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
 from datetime import datetime
-from .extensions import db, init_app
+from .config import Config
   
 app = Flask(__name__)
 
-app.config.from_pyfile('config.py')
+#app.config.from_pyfile('config.py')
+app.config.from_object('Config')
+print("App Config: ", app.config)
 
+print("Setting SQLAlchemy_DATABASE_URI")
 SECRET_KEY = app.config['SECRET_KEY']
+def init_app(app):
+   app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
+   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+print(app.config['SQLALCHEMY_DATABASE_URI'])
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#.create_all()
-#db = SQLAlchemy()
+db = SQLAlchemy(app)
 init_app(app)
-migrate = Migrate(app, db, directory='C:\DatabaseProject\migrations')
+migrate = Migrate(app, db, directory='C:\DatabaseProject\\migrations')
 
 #for name, ext in extensions.items():
  #  if hasattr(ext, 'init_app'):
   #   exit.init_app(app)
-#db.init_app(app) 
-migrate.init_app(app, db)
+#db.init_app(app)
+#with app.app_context():
+ #  migrate.init_app(app, db)
 
-with app.app_context():
-   db.create_all()
+#with app.app_context():
+ #  db.create_all()
 
+    
 @app.before_request 
 def before_request_func():
    pass
