@@ -1,32 +1,50 @@
 import os
-
+import secrets
+import pymysql
 from flask import Flask, jsonify, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
-#from .models import *
+from .config import Config
 from food_safety_management_system.extensions import extensions, db, migrate, init_app
 from .models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
 from datetime import datetime
-from .config import Config
-  
+
+#pymysql.install_as_MySQLdb()  
 app = Flask(__name__)
 
+SECRET_KEY = secrets.token_urlsafe(32)
+pymysql.install_as_MySQLdb()
+    
+class Config:
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
+    SQLALCHEMY_POOL_SIZE = 10
+    SQLALCHEMY_POOL_TIMEOUT = 30
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_BINDS = {
+    'default' : 'mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
+    }
+    
 #app.config.from_pyfile('config.py')
-app.config.from_object('Config')
-print("App Config: ", app.config)
+#app.config.from_object('Config')
+#print("App Config: ", app.config )
+#print("SQLALCHEMY_DATABASE_URI:", app.config['SQLALCHEMY_DATABASE_URI'])
+#print("Setting SQLAlchemy_DATABASE_URI")
+#SECRET_KEY = app.config['SECRET_KEY']
+#def init_app(app):
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-print("Setting SQLAlchemy_DATABASE_URI")
-SECRET_KEY = app.config['SECRET_KEY']
-def init_app(app):
-   app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
-   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-print(app.config['SQLALCHEMY_DATABASE_URI'])
 
+#init_app(app)
 db = SQLAlchemy(app)
-init_app(app)
+db.init_app(app)
+
+migrate = Migrate()
 migrate = Migrate(app, db, directory='C:\DatabaseProject\\migrations')
 
+print("App Config: ", app.config)
+print("SQLAlchemy_DATABASE_URI: ", app.config['SQLALCHEMY_DATABASE_URI'])
 #for name, ext in extensions.items():
  #  if hasattr(ext, 'init_app'):
   #   exit.init_app(app)
