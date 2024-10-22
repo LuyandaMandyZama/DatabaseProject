@@ -17,8 +17,8 @@ class Config:
     }
     SECRET_KEY = SECRET_KEY
     
-app = Flask(__name__)
-app.config.from_object(Config)
+#app = Flask(__name__)
+#app.config.from_object(Config)
 
 #db = SQLAlchemy()
 #print(app.config['SQLALCHEMY_DATABASE_URI'])       

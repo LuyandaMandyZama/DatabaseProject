@@ -6,15 +6,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from .config import Config
-from food_safety_management_system.extensions import extensions, db, migrate, init_app
-from .models import FoodItem, User, Inspection, Violation, db, FoodItemSchema
+from food_safety_management_system.extensions import extensions, db, migrate
+from .models import FoodItem, User, Inspection, Violation, FoodItemSchema
 from datetime import datetime
 
 #pymysql.install_as_MySQLdb()  
 app = Flask(__name__)
+app.config.from_object(Config)
 
-SECRET_KEY = secrets.token_urlsafe(32)
-pymysql.install_as_MySQLdb()
+#SECRET_KEY = secrets.token_urlsafe(32)
+#pymysql.install_as_MySQLdb()
     
 class Config:
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
@@ -24,7 +25,10 @@ class Config:
     SQLALCHEMY_BINDS = {
     'default' : 'mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
     }
+    SECRET_KEY = secrets.token_urlsafe(32)
     
+app.config.from_object(Config)
+     
 #app.config.from_pyfile('config.py')
 #app.config.from_object('Config')
 #print("App Config: ", app.config )
@@ -37,14 +41,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 #init_app(app)
-db = SQLAlchemy(app)
-db.init_app(app)
+#db = SQLAlchemy(app)
+def init_app(app):
+   db.init_app(app)
 
-migrate = Migrate()
+#migrate = Migrate()
 migrate = Migrate(app, db, directory='C:\DatabaseProject\\migrations')
 
-print("App Config: ", app.config)
-print("SQLAlchemy_DATABASE_URI: ", app.config['SQLALCHEMY_DATABASE_URI'])
+#print("App Config: ", app.config)
+#print("SQLAlchemy_DATABASE_URI: ", app.config['SQLALCHEMY_DATABASE_URI'])
 #for name, ext in extensions.items():
  #  if hasattr(ext, 'init_app'):
   #   exit.init_app(app)
@@ -205,18 +210,22 @@ def create_inspection():
  
 @app.route('/inspections/<id>', methods=['PUT'])
 def update_inspection(id):
-   inspection = Inspection.query.get(id)
-   if inspection:
-      data = request.get_json()
-      inspection.food_item_id= data.get('food_item_id')
-      inspection.inspection_date= data.get('inspection_date')
-      inspection.entity_type=data.get('entity_type')
-      inspection.entity_id=data.get('entity_id')
-      inspection.temperature=data.get('temperature')
-      inspection.results = data.get('results') 
-      db.session.commit()
-      return jsonify(inspection.to_dict())
-   return jsonify({'message': 'Inspection Not Found'}), 404
+   try:
+      inspection = Inspection.query.get(id)
+      if inspection:
+        data = request.get_json()
+        inspection.food_item_id= data.get('food_item_id')
+        inspection.inspection_date= data.get('inspection_date')
+        inspection.entity_type=data.get('entity_type')
+        inspection.entity_id=data.get('entity_id')
+        inspection.temperature=data.get('temperature')
+        inspection.results = data.get('results') 
+        db.session.commit()
+        return jsonify(inspection.to_dict())
+      return jsonify({'message': 'Inspection Not Found'}), 404
+   except Exception as e:
+      print(f"Error: {e}")
+      return jsonify({'error':'An error occurred'}), 500
  
 @app.route('/inspections/<id>', methods=['DELETE'])
 def delete_inspection(id):
