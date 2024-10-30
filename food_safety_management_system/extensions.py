@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 #from sqlalchemy.ext.declarative import DeclarativeBase
 from flask_login import LoginManager
 from flask_migrate import Migrate
-app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:LuyandaZama14@localhost/foodsafetysystem"
+#app = Flask(__name__)
+#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:LuyandaZama14@localhost/foodsafetysystem"
 
 db = SQLAlchemy()
 Base = db.Model

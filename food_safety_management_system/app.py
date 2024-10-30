@@ -6,11 +6,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from .config import Config
-from food_safety_management_system.extensions import extensions, db, migrate
+from food_safety_management_system.extensions import extensions,migrate,db
 from .models import FoodItem, User, Inspection, Violation, FoodItemSchema
 from datetime import datetime
 
-#pymysql.install_as_MySQLdb()  
+def create_app():
+   app = Flask(__name__)
+   app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost:5000/foodsafetysystem'
+   db.init_app(app)
+   return app
+#db = SQLAlchemy(app)
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -57,8 +62,8 @@ migrate = Migrate(app, db, directory='C:\DatabaseProject\\migrations')
 #with app.app_context():
  #  migrate.init_app(app, db)
 
-#with app.app_context():
- #  db.create_all()
+with app.app_context():
+   db.create_all()
 
     
 @app.before_request 
