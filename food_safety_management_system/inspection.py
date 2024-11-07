@@ -1,5 +1,8 @@
-from .models import Violation
+from flask import Blueprint, jsonify, request
+from .models import Violation, Inspection
 from datetime import date, timedelta
+
+inspection_bp = Blueprint('unique_inspection_bp', __name__)
 
 def detect_violations(inspection):
     violations = [ ]
@@ -32,3 +35,10 @@ def detect_violations(inspection):
             ))    
             
             return violations
+
+@inspection_bp.route('/detect_violations', methods=['POST'])
+def detect_violations_endpoint():
+    inspection_data = request.get_json()
+    inspection = Inspection(**inspection_data)
+    violations = detect_violations(inspection)
+    return jsonify([violation.to_dict() for violation in violations])

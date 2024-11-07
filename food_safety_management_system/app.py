@@ -1,7 +1,8 @@
 import os
 import secrets
 import pymysql
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Blueprint
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
@@ -9,19 +10,30 @@ from .config import Config
 from food_safety_management_system.extensions import extensions,migrate,db
 from .models import FoodItem, User, Inspection, Violation, FoodItemSchema
 from datetime import datetime
-
+from flask_bcrypt import Bcrypt
+from .inspection import inspection_bp
+from .auth import auth_blueprint
+#auth_blueprint= Blueprint('auth',__name__)
 def create_app():
    app = Flask(__name__)
-   app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@localhost:5000/foodsafetysystem'
-   db.init_app(app)
-   return app
-#db = SQLAlchemy(app)
-app = Flask(__name__)
-app.config.from_object(Config)
+   app.config.from_object(Config)
+   
+   app.register_blueprint(auth_blueprint, url_prefix='/auth')
+   app.register_blueprint(inspection_bp, url_prefix='/inspection')
+   
 
-#SECRET_KEY = secrets.token_urlsafe(32)
-#pymysql.install_as_MySQLdb()
-    
+   db.init_app(app)
+   migrate = Migrate(app, db, directory=r'C:\DatabaseProject\migrations')
+   
+   login_manager = LoginManager()
+   login_manager.init_app(app)
+   login_manager.login_view = 'login'
+   
+   
+   bcrypt = Bcrypt(app)
+   
+   return app
+ 
 class Config:
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:LuyandaZama14@localhost/foodsafetysystem'
     SQLALCHEMY_POOL_SIZE = 10
@@ -32,36 +44,12 @@ class Config:
     }
     SECRET_KEY = secrets.token_urlsafe(32)
     
-app.config.from_object(Config)
-     
-#app.config.from_pyfile('config.py')
-#app.config.from_object('Config')
-#print("App Config: ", app.config )
-#print("SQLALCHEMY_DATABASE_URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-#print("Setting SQLAlchemy_DATABASE_URI")
-#SECRET_KEY = app.config['SECRET_KEY']
-#def init_app(app):
-app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-#init_app(app)
-#db = SQLAlchemy(app)
-def init_app(app):
-   db.init_app(app)
-
-#migrate = Migrate()
-migrate = Migrate(app, db, directory='C:\DatabaseProject\\migrations')
-
-#print("App Config: ", app.config)
-#print("SQLAlchemy_DATABASE_URI: ", app.config['SQLALCHEMY_DATABASE_URI'])
-#for name, ext in extensions.items():
- #  if hasattr(ext, 'init_app'):
-  #   exit.init_app(app)
-#db.init_app(app)
-#with app.app_context():
- #  migrate.init_app(app, db)
-
+app = create_app()
 with app.app_context():
    db.create_all()
 
@@ -248,16 +236,21 @@ def get_all_violations():
 
 @app.route('/violations', methods=['POST'])
 def create_violation():
-   data = request.get_json()
-   violation = Violation(
-      inspection_id=data['inspection_id'],
-      description=data['description'],
-      severity=data['severity'],
-      storage_location=data['storage_location']
-   ) 
-   db.session.add(violation)
-   db.session.commit()
-   return jsonify(violation.to_dict()), 201
+   try:
+      data = request.get_json()
+      
+      violation = Violation(
+         inspection_id=data['inspection_id'],
+         description=data['description'],
+         severity=data['severity'],
+         storage_location=data['storage_location']
+      ) 
+      db.session(violation) 
+      db.session.commit()
+      return jsonify(violation.to_dict()), 201
+   except Exception as e:
+      return jsonify({'error' : 'An error occurred'}), 500
+   
 
 @app.route('/violations/<id>', methods=['PUT'])
 def update_violation(id):
@@ -279,13 +272,13 @@ def delete_violation(id):
       db.session.commit()
       return jsonify({'message': 'Violation Deleted'})
 
-from flask import Flask, render_template, redirect, url_for, flash, Blueprint 
+from flask import Flask, render_template, redirect, url_for, flash 
 from flask_login import LoginManager,  login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from .forms import RegistrationForm
 
 from .user import User
-auth_blueprint= Blueprint('auth',__name__)
+
 
 from .config import SECRET_KEY 
 app.config['SECRET_KEY']
@@ -294,9 +287,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'  
 
-login_manager.blueprint_name = 'auth_blueprint'
-
-app.register_blueprint(auth_blueprint, name='auth')
 
 from flask_bcrypt import bcrypt
 
@@ -337,9 +327,11 @@ def dashboard():
    return render_template('dashboard.html', name=current_user.email)
 
 from .config import Config 
-from .routes import inspection_bp 
+#from .routes import inspection_bp 
 from .inspection import *
-app.register_blueprint(inspection_bp)
+
+#app.register_blueprint(inspection_bp)
+
 @app.route('/inspection_report')
 def inspection_report():
    cursor = cursor()

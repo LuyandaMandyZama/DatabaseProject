@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from .forms import RegistrationForm, LoginForm, InspectionForm
 from .models import User, db, Inspection
 from flask_login import LoginManager, login_user, logout_user
-from food_safety_management_system.app import app
+#from food_safety_management_system.app import app
 from werkzeug.security import generate_password_hash
 #from app.auth import auth
 from flask_wtf import FlaskForm
@@ -23,7 +23,7 @@ class Auth:
   
 def __init__(self):
     self.login_manager = LoginManager()
-    self.login_manager.init_app(app)
+    self.login_manager.init_app()
     self.login_manager.user_loader(self.load_user)
 
 def register(email, password): 
@@ -50,7 +50,7 @@ def logout(self):
 
 from flask_bcrypt import Bcrypt 
 
-bcrypt = Bcrypt(app)
+bcrypt = Bcrypt()
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
 def register():

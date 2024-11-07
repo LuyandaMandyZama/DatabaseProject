@@ -1,7 +1,8 @@
 from flask import Flask
 #from  food_safety_management_system import db 
-from .database import db
-from flask_sqlalchemy import SQLAlchemy 
+from .extensions import db
+#
+# from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow
 #from .app import db 
 from flask_login import UserMixin
@@ -167,6 +168,7 @@ class Violation(db.Model):
     description = db.Column(db.Text)
     severity = db.Column(db.String(50))
     storage_location = db.Column(db.String(255), nullable=False)
+    
     inspection = db.relationship('Inspection', backref=db.backref('violations', lazy=True))
     
     def to_dict(self):

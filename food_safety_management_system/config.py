@@ -1,6 +1,6 @@
 from flask import Flask
 
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 import secrets
 import pymysql
 
@@ -20,5 +20,5 @@ class Config:
 #app = Flask(__name__)
 #app.config.from_object(Config)
 
-#db = SQLAlchemy()
+#
 #print(app.config['SQLALCHEMY_DATABASE_URI'])       

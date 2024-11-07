@@ -108,7 +108,9 @@ def home():
 
 from flask import jsonify
 from .models import Inspection 
-inspection_bp = Blueprint('inspections', __name__)
+from .app import inspection_bp
+ 
+# inspection_bp = Blueprint('inspections', __name__)
 
 @inspection_bp.route('/api/inspections', methods=['GET']) 
 def get_inspections():
