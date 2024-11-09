@@ -1,6 +1,6 @@
 from flask import Flask
 
-#from flask_sqlalchemy import SQLAlchemy
+
 import secrets
 import pymysql
 
@@ -17,8 +17,4 @@ class Config:
     }
     SECRET_KEY = SECRET_KEY
     
-#app = Flask(__name__)
-#app.config.from_object(Config)
-
-#
-#print(app.config['SQLALCHEMY_DATABASE_URI'])       
+      

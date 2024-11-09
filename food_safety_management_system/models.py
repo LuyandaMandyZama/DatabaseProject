@@ -1,23 +1,16 @@
 from flask import Flask
-#from  food_safety_management_system import db 
+
 from .extensions import db
-#
-# from flask_sqlalchemy import SQLAlchemy 
+
 from flask_marshmallow import Marshmallow
-#from .app import db 
+
 from flask_login import UserMixin
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, Text, Date 
 from sqlalchemy.ext.declarative import   declarative_base 
 Base = declarative_base()
 
-#app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:LuyandaZama14@localhost/foodsafetysystem'
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
-
-#db = SQLAlchemy(app)
 ma = Marshmallow()
 
 class User(db.Model, Base, UserMixin): 
@@ -171,6 +164,11 @@ class Violation(db.Model):
     
     inspection = db.relationship('Inspection', backref=db.backref('violations', lazy=True))
     
+    def __init__(self, inspection_id, description, severity, storage_location):
+        self.inspection_id = inspection_id
+        self.description = description
+        self.severity = severity
+        self.storage_location = storage_location
     def to_dict(self):
         return {
             'id' : self.id,

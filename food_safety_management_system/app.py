@@ -13,7 +13,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from .inspection import inspection_bp
 from .auth import auth_blueprint
-#auth_blueprint= Blueprint('auth',__name__)
+
 def create_app():
    app = Flask(__name__)
    app.config.from_object(Config)
@@ -44,10 +44,6 @@ class Config:
     }
     SECRET_KEY = secrets.token_urlsafe(32)
     
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = app.config.get('SQLALCHEMY_DATABASE_URI','mysql://root:LuyandaZama14@localhost/foodsafetysystem')
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 app = create_app()
 with app.app_context():
@@ -96,26 +92,6 @@ def update_user(user_id):
    db.session.commit()
    return jsonify({"message" : "User Updated Successfullly"}), 200
    
- #  data = request.get_json()
-  # user = User.query.get(user_id)
-   #if not user:
-    #  return jsonify({ 'message' : 'User Not Found' }), 404
-   
-   #data = request.get_json() 
-   #if 'email' in data: 
-    #  user.email = data['email']
-   #db.session.commit()
-   
-   #return jsonify(user.to_dict()), 200
-
-   #user = User.query.filter_by(email=email).first()
-   #if user:
-    #  data = request.get_json()
-     # user.email = data.get('email')  
-      #user.name = data.get('name') 
-      #db.session.commit() 
-      #return jsonify(user.to_dict()) 
-   #return jsonify({'message' : 'User Not Found'}), 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
@@ -198,7 +174,7 @@ def create_inspection():
    )
    db.session.add(inspection)
    db.session.commit()
-   #return jsonify({'message':'Inspection Created', 'id':})
+   
    return jsonify(inspection.to_dict()), 201
  
 @app.route('/inspections/<id>', methods=['PUT'])
@@ -237,32 +213,41 @@ def get_all_violations():
 @app.route('/violations', methods=['POST'])
 def create_violation():
    try:
-      data = request.get_json()
-      
-      for key in data.keys():
-         print(f"Key: '{key}', Type: {type(key)}")
-         
+      data = request.json
       print("Received Data:", data)
-      print("Keys in received data:", data.keys())
+      
+      inspection_id = data.get('inspection_id')
+      
+      description = data.get('description', 'No description provided')
+      severity = data.get('severity', 'Low')
+      storage_location = data.get('storage_location', 'Unknown')
+      
+      if inspection_id is None:
+         return jsonify({"error": "Missing inspection_id"}), 400
       
       violation = Violation(
-         inspection_id=data['inspection_id'],
-         description=data['description'],
-         severity=data['severity'],
-         storage_location=data['storage_location']
-      ) 
-      db.session(violation) 
-      db.session.commit()
+         inspection_id=inspection_id,
+         description=description,
+         severity=severity,
+         storage_location=storage_location
+      )
       
-      return jsonify(violation.to_dict()), 201
+      db.session.add(violation) 
+      
+      db.session.commit() 
+      
+      return jsonify({"message":"Violation added successfully"}), 201
+      
    
       if 'inspection_id' not in data:
         print("Error: 'inspection_id' is missing in the received data.")
       return jsonify({'error' : "'inspection_id' key missing in JSON data"}), 400
    
    except Exception as e:
+      import traceback
+      print(traceback.format_exc())
       print(f"Error: {e}")
-      return jsonify({'error' : 'An error occurred'}), 500
+      return jsonify({'error' : str(e)}), 500
    
 
 @app.route('/violations/<id>', methods=['PUT'])
@@ -340,10 +325,10 @@ def dashboard():
    return render_template('dashboard.html', name=current_user.email)
 
 from .config import Config 
-#from .routes import inspection_bp 
+
 from .inspection import *
 
-#app.register_blueprint(inspection_bp)
+
 
 @app.route('/inspection_report')
 def inspection_report():

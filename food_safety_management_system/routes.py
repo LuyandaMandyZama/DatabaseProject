@@ -101,16 +101,13 @@ from flask_login import login_required
 def home():
     return render_template('home.html')
 
-#@app.route('/items', methods=['GET'])
-#ef get_item(item_id):
-  # food_item = FoodItem.query.get_or_404(item_id)
-   #return jsonify(food_item.to_dict())
+
 
 from flask import jsonify
 from .models import Inspection 
 from .app import inspection_bp
  
-# inspection_bp = Blueprint('inspections', __name__)
+
 
 @inspection_bp.route('/api/inspections', methods=['GET']) 
 def get_inspections():
