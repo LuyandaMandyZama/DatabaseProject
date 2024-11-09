@@ -164,7 +164,7 @@ class Violation(db.Model):
     __tablename__ = 'violation'  
     __allow_unmapped__ = True
     id = db.Column(db.Integer, primary_key=True)
-    inspection_id = db.Column(db.Integer, db.ForeignKey('inspection.id'))
+    inspection_id = db.Column(db.Integer, db.ForeignKey('inspection.id'), nullable=False)
     description = db.Column(db.Text)
     severity = db.Column(db.String(50))
     storage_location = db.Column(db.String(255), nullable=False)

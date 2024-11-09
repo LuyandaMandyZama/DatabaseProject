@@ -239,6 +239,12 @@ def create_violation():
    try:
       data = request.get_json()
       
+      for key in data.keys():
+         print(f"Key: '{key}', Type: {type(key)}")
+         
+      print("Received Data:", data)
+      print("Keys in received data:", data.keys())
+      
       violation = Violation(
          inspection_id=data['inspection_id'],
          description=data['description'],
@@ -247,8 +253,15 @@ def create_violation():
       ) 
       db.session(violation) 
       db.session.commit()
+      
       return jsonify(violation.to_dict()), 201
+   
+      if 'inspection_id' not in data:
+        print("Error: 'inspection_id' is missing in the received data.")
+      return jsonify({'error' : "'inspection_id' key missing in JSON data"}), 400
+   
    except Exception as e:
+      print(f"Error: {e}")
       return jsonify({'error' : 'An error occurred'}), 500
    
 
